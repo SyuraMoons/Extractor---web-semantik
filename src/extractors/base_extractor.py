@@ -21,6 +21,11 @@ class BaseExtractor(ABC):
         """Generate unique ID for entities"""
         return f"{prefix}_{uuid.uuid4().hex[:8]}"
 
+    def get_readable_filename(self, source_file: Path) -> str:
+        """Generate readable filename: framework_sourcename"""
+        source_stem = source_file.stem  # e.g., "research_team"
+        return f"{self.framework_name}_{source_stem}"
+
     def now_iso(self) -> str:
         """Get current timestamp in ISO format"""
         return datetime.utcnow().isoformat() + "Z"
@@ -142,6 +147,7 @@ class BaseExtractor(ABC):
 
         normalized = {
             "id": pattern_id,
+            "readable_name": self.get_readable_filename(source_file),
             "framework": self.framework_name,
             "source_file": str(source_file),
             "title": raw_data.get("title", f"{self.framework_name} pattern {pattern_id}"),
